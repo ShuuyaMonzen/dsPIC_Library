@@ -27,8 +27,8 @@
 #include <math.h>
 #include "Config_dsPIC33FJ128MC802.h"
 #include "DefineValues_dsPIC33FJ128MC802.h"
-#include <libpic30.h>
 #include <xc.h>
+#include <libpic30.h>
 
 /**
  * dsPIC初期設定関数

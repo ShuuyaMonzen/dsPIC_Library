@@ -1,5 +1,8 @@
 #include "BasicLibrary_dsPIC33FJ128MC802.h"
 
+static float T2CKPS = 1.0;
+static float T3CKPS = 1.0;
+
 // <editor-fold defaultstate="collapsed" desc="pragma">
 // FBS
 #pragma config BWRP = WRPROTECT_OFF     // Boot Segment Write Protect (Boot Segment may be written)
@@ -45,7 +48,7 @@
 
 typedef struct {
     uint8_t BunshuHi;
-    unsigned float microSec;
+    float microSec;
     uint16_t real_data;
 } OutPutCompareSettingValues;
 static OutPutCompareSettingValues _changeBeforeOC[5] = {};
@@ -393,6 +396,7 @@ static void SetupMI2C(dsPicConfigValues* dsPIC_Object) {
 static uint16_t GetBunshuhi(float periodMilliSec) {
     float PR_RegisterValue = 0;
     float Bunshuhi = 0;
+    uint8_t i;
     for (i = 0; i < 4; i++) {
         Bunshuhi = pow(8.0, i);
         if (Bunshuhi > 64.0) {
@@ -705,7 +709,7 @@ static void SetDuty(OutputCompare ocNum, unsigned int duty, ActiveDirection pinA
     }
 }
 
-void SetDutyMicroSec(OutputCompare ocNum, unsigned float microSec, ActiveDirection pinAction) {
+void SetDutyMicroSec(OutputCompare ocNum, float microSec, ActiveDirection pinAction) {
 
     volatile unsigned int* OCRS_add[4] = {&OC1RS, &OC2RS, &OC3RS, &OC4RS};
     volatile unsigned int* period;
