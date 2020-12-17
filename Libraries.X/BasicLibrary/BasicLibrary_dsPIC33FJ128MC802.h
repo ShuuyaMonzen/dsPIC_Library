@@ -30,54 +30,64 @@
 #include <xc.h>
 #include <libpic30.h>
 
+typedef struct {
+    // <editor-fold defaultstate="collapsed" desc="プロパティ">
+
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="メソッド">
+    // <editor-fold defaultstate="collapsed" desc="UART">
+    void (*SendUART1)(uint8_t byte);
+
+    uint8_t(*RecieveUART1)();
+
+    void (*SendUART2)(uint8_t datas);
+
+    uint8_t(*RecieveUART2)();
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="I2C_Master">
+    void (*StartMI2C)();
+
+    void (*SendMI2C)(uint8_t datas);
+
+    uint8_t(*ReadMI2C)();
+
+    void (*StopMI2C)();
+
+    void (*RxOnMI2C)();
+
+    void (*RestartMI2C)();
+
+    void (*SendAckMI2C)();
+
+    void (*SendNackMI2C)();
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="OutPutCompare">
+    void (*SetDutyMicroSec)(OutputCompare ocNum, float microSec, ActiveDirection pinAction);
+
+    void (*SetDutyPercent)(OutputCompare ocNum, float percent, ActiveDirection pinAction);
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="Timer">
+    void (*SetDelay)(Timer timerNum, TimerMode mode, float sec, InterruptEnableEnum interruptEnable);
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="QEI">
+    int16_t (*ReadQEI1)();
+
+    int16_t (*ReadQEI2)();
+    // </editor-fold>
+
+    // </editor-fold>
+
+} dsPIC;
+
 /**
  * dsPIC初期設定関数
  * main関数で最初に呼び出してください
  */
-void Initialize();
-
-// <editor-fold defaultstate="collapsed" desc="UART">
-void SendUART1(uint8_t byte);
-
-uint8_t RecieveUART1();
-
-void SendUART2(uint8_t datas);
-
-uint8_t RecieveUART2();
-// </editor-fold>
-
-// <editor-fold defaultstate="collapsed" desc="I2C_Master">
-void StartMI2C();
-
-void SendMI2C(uint8_t datas);
-
-uint8_t ReadMI2C();
-
-void StopMI2C();
-
-void RxOnMI2C();
-
-void RestartMI2C();
-
-void SendAckMI2C();
-
-void SendNackMI2C();
-// </editor-fold>
-
-// <editor-fold defaultstate="collapsed" desc="OutPutCompare">
-void SetDutyMicroSec(OutputCompare ocNum, float microSec, ActiveDirection pinAction);
-
-void SetDutyPercent(OutputCompare ocNum, float percent, ActiveDirection pinAction);
-// </editor-fold>
-
-// <editor-fold defaultstate="collapsed" desc="Timer">
-void SetDelay(Timer timerNum, TimerMode mode, float sec, InterruptEnableEnum interruptEnable);
-// </editor-fold>
-
-// <editor-fold defaultstate="collapsed" desc="QEI">
-int16_t ReadQEI1();
-
-int16_t ReadQEI2();
-// </editor-fold>
+dsPIC* dsPICInitialize();
 #endif	/* BASIC_LIB_DSPIC_H */
 

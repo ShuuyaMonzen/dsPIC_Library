@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "BasicLibrary_dsPIC33FJ128MC802.h"
 
 static float T2CKPS = 1.0;
@@ -145,8 +146,276 @@ typedef struct {
     // </editor-fold>
 } dsPicConfigValues;
 
-// <editor-fold defaultstate="collapsed" desc="初期設定">
+// <editor-fold defaultstate="collapsed" desc="UART">
 
+void SendUART1(uint8_t byte) {
+    _U1TXIF = 0;
+    U1TXREG = byte;
+}
+
+uint8_t RecieveUART1() {
+    _U1RXIF = 0;
+    uint8_t temp;
+    temp = U1RXREG;
+    return temp;
+}
+
+void SendUART2(uint8_t datas) {
+    _U2TXIF = 0;
+    U2TXREG = datas;
+}
+
+uint8_t RecieveUART2() {
+    _U2RXIF = 0;
+    uint8_t temp;
+    temp = U2RXREG;
+    return temp;
+}
+
+void __attribute__((interrupt, auto_psv)) _U1ErrInterrupt(void) {
+    _U1EIF = 0;
+    if (U1STAbits.FERR == 1) {
+        return;
+    }
+
+    if (U1STAbits.OERR == 1) {
+        U1STAbits.OERR = 0;
+        return;
+    }
+}
+
+void __attribute__((interrupt, auto_psv)) _U2ErrInterrupt(void) {
+    _U2EIF = 0;
+    if (U2STAbits.FERR == 1) {
+        return;
+    }
+
+    if (U2STAbits.OERR == 1) {
+        U2STAbits.OERR = 0;
+        return;
+    }
+}
+// </editor-fold>
+
+// <editor-fold defaultstate="collapsed" desc="I2C_Master">
+
+void StartMI2C() {
+    _MI2C1IF = 0;
+    I2C1CONbits.SEN = 1;
+}
+
+void SendMI2C(uint8_t datas) {
+    _MI2C1IF = 0;
+    I2C1TRN = datas;
+}
+
+uint8_t ReadMI2C() {
+    uint8_t temp;
+    _MI2C1IF = 0;
+    while (!_MI2C1IF);
+    temp = I2C1RCV;
+    return temp;
+}
+
+void StopMI2C() {
+    _MI2C1IF = 0;
+    I2C1CONbits.PEN = 1;
+}
+
+void RxOnMI2C() {
+    I2C1CONbits.RCEN = 1;
+}
+
+void RestartMI2C() {
+    _MI2C1IF = 0;
+    I2C1CONbits.RSEN = 1;
+}
+
+void SendAckMI2C() {
+    _MI2C1IF = 0;
+    I2C1CONbits.ACKDT = 0;
+    I2C1CONbits.ACKEN = 1;
+}
+
+void SendNackMI2C() {
+    _MI2C1IF = 0;
+    I2C1CONbits.ACKDT = 1;
+    I2C1CONbits.ACKEN = 1;
+}
+// </editor-fold>
+
+// <editor-fold defaultstate="collapsed" desc="OutPutCompare">
+
+static void SetDuty(OutputCompare ocNum, unsigned int duty, ActiveDirection pinAction) {
+    volatile unsigned int* ocrsArray[4] = {&OC1RS, &OC2RS, &OC3RS, &OC4RS};
+    volatile unsigned int* period = NULL;
+
+    if ((ocNum == OutputCompare1) || (ocNum == OutputCompare2)) {
+        period = &PR2;
+    } else {
+        period = &PR3;
+    }
+    if (duty > *period) {
+        duty = *period;
+    }
+
+    if (pinAction == ActiveHigh) {
+        *ocrsArray[ocNum] = duty;
+    } else {
+        *ocrsArray[ocNum] = *period - duty;
+    }
+}
+
+void SetDutyMicroSec(OutputCompare ocNum, float microSec, ActiveDirection pinAction) {
+
+    volatile unsigned int* OCRS_add[4] = {&OC1RS, &OC2RS, &OC3RS, &OC4RS};
+    volatile unsigned int* period;
+    float TCKPS;
+
+    if (_changeBeforeOC[ocNum].microSec != microSec) {
+        if ((ocNum == OutputCompare1) || (ocNum == OutputCompare2)) {
+            TCKPS = T2CKPS;
+            period = &PR2;
+        } else {
+            TCKPS = T3CKPS;
+            period = &PR3;
+        }
+
+        _changeBeforeOC[ocNum].real_data = fabs(((microSec / 1000000.0) * FCY) / (TCKPS));
+        if (_changeBeforeOC[ocNum].real_data >= *period) {
+            _changeBeforeOC[ocNum].real_data = *period;
+        }
+        _changeBeforeOC[ocNum].microSec = microSec;
+    }
+    if (pinAction == ActiveHigh) {
+        *OCRS_add[ocNum] = _changeBeforeOC[ocNum].real_data;
+    } else {
+        *OCRS_add[ocNum] = *period - _changeBeforeOC[ocNum].real_data;
+    }
+}
+
+void SetDutyPercent(OutputCompare ocNum, float percent, ActiveDirection pinAction) {
+    float duty = 0;
+
+    if (fabs(percent) > 100.0) {
+        percent = 100.0;
+    }
+
+    if ((ocNum == OutputCompare1) || (ocNum == OutputCompare2)) {
+        duty = PR2 * (percent / 100.0);
+    } else {
+        duty = PR3 * (percent / 100.0);
+    }
+    SetDuty(ocNum, duty, pinAction);
+}
+// </editor-fold>
+
+// <editor-fold defaultstate="collapsed" desc="Timer">
+
+static void SetTimerInterrupt(Timer timerNum, InterruptEnableEnum interruptEnable) {
+    switch (timerNum) {
+        case Timer1:
+            _T1IF = 0;
+            _T1IE = (interruptEnable == InterruptEnable);
+            break;
+        case Timer2:
+            _T2IF = 0;
+            _T2IE = (interruptEnable == InterruptEnable);
+            break;
+        case Timer3:
+            _T3IF = 0;
+            _T3IE = (interruptEnable == InterruptEnable);
+            break;
+        case Timer4:
+            _T4IF = 0;
+            _T4IE = (interruptEnable == InterruptEnable);
+            break;
+        case Timer5:
+            _T5IF = 0;
+            _T5IE = (interruptEnable == InterruptEnable);
+            break;
+    }
+}
+
+static void SetTimerConfig(Timer timerNum, uint8_t tckps) {
+    switch (timerNum) {
+        case Timer1:
+            T1CONbits.TCKPS = tckps;
+            T1CONbits.TON = true;
+            break;
+        case Timer2:
+            T2CONbits.TCKPS = tckps;
+            T2CONbits.TON = true;
+            break;
+        case Timer3:
+            T3CONbits.TCKPS = tckps;
+            T3CONbits.TON = true;
+            break;
+        case Timer4:
+            T4CONbits.TCKPS = tckps;
+            T4CONbits.TON = true;
+            break;
+        case Timer5:
+            T5CONbits.TCKPS = tckps;
+            T5CONbits.TON = true;
+            break;
+    }
+}
+
+void SetDelay(Timer timerNum, TimerMode mode, float sec, InterruptEnableEnum interruptEnable) {
+    float TMR = 0;
+    const float PRx_MAX_VAL = 65535.0;
+    float TCKPS = 1.0;
+    uint8_t i = 0;
+    volatile unsigned int* TMR_add[5] = {&TMR1, &TMR2, &TMR3, &TMR4, &TMR5};
+    volatile unsigned int* PR_add[5] = {&PR1, &PR2, &PR3, &PR4, &PR5};
+
+    if ((_changeBeforeTMR[timerNum].Mode != mode)
+            || (_changeBeforeTMR[timerNum].Sec != sec)) {
+        for (i = 0; i < 4; i++) {
+            TCKPS = pow(8.0, i);
+            if (TCKPS > 64.0) {
+                TCKPS = 256.0;
+            }
+            TMR = (((sec / (pow(1000.0, mode + 1))) * FCY) / (TCKPS));
+            if (TMR <= PRx_MAX_VAL) {
+                _changeBeforeTMR[timerNum].real_data = TMR;
+                break;
+            } else if (i == 3) {
+                _changeBeforeTMR[timerNum].real_data = 0xFFFF;
+            }
+        }
+        _changeBeforeTMR[timerNum].TkcpsValue = i;
+        _changeBeforeTMR[timerNum].Mode = mode;
+        _changeBeforeTMR[timerNum].Sec = sec;
+    }
+
+    *TMR_add[timerNum] = 0;
+    *PR_add[timerNum] = _changeBeforeTMR[timerNum].real_data;
+    SetTimerInterrupt(timerNum, interruptEnable);
+    SetTimerConfig(timerNum, _changeBeforeTMR[timerNum].TkcpsValue);
+}
+// </editor-fold>
+
+// <editor-fold defaultstate="collapsed" desc="QEI">
+
+int16_t ReadQEI1() {
+    int16_t temp = 0;
+    temp = (int16_t) POS1CNT;
+    POS1CNT = 0;
+    return temp;
+}
+
+int16_t ReadQEI2() {
+    int16_t temp = 0;
+    temp = (int16_t) POS2CNT;
+    POS2CNT = 0;
+    return temp;
+}
+// </editor-fold>
+
+// <editor-fold defaultstate="collapsed" desc="初期設定">
+// <editor-fold defaultstate="collapsed" desc="各モジュール初期設定">
 static void Setup_dsPIC() {
     OSCTUN = 18;
     CLKDIVbits.FRCDIV = 0;
@@ -416,7 +685,7 @@ static uint16_t GetBunshuhi(float periodMilliSec) {
 static void SetupOC(dsPicConfigValues* dsPIC_Object) {
     float TCKPS, temp;
     float OC1And2Period, OC3And4Period;
-    uint8_t i;
+    uint8_t i = 0;
 
     if ((dsPIC_Object->OutputCompare1 != NotUsedModule) ||
             (dsPIC_Object->OutputCompare2 != NotUsedModule)) {
@@ -576,7 +845,35 @@ static void SetupTMR(dsPicConfigValues* dsPIC_Object) {
 }
 // </editor-fold>
 
-void Initialize() {
+static dsPIC* new_dsPIC(){
+    dsPIC* dspic = (dsPIC*) malloc(sizeof (dsPIC));
+    
+    dspic->SendUART1 = SendUART1;
+    dspic->RecieveUART1 = RecieveUART1;
+    dspic->SendUART2 = SendUART2;
+    dspic->RecieveUART2 = RecieveUART2;
+    
+    dspic->StartMI2C = StartMI2C;
+    dspic->SendMI2C = SendMI2C;
+    dspic->ReadMI2C = ReadMI2C;
+    dspic->StopMI2C = StopMI2C;
+    dspic->RxOnMI2C = RxOnMI2C;
+    dspic->RestartMI2C = RestartMI2C;
+    dspic->SendAckMI2C = SendAckMI2C;
+    dspic->SendNackMI2C = SendNackMI2C;
+    
+    dspic->SetDutyMicroSec = SetDutyMicroSec;
+    dspic->SetDutyPercent = SetDutyPercent;
+    
+    dspic->SetDelay = SetDelay;
+    
+    dspic->ReadQEI1 = ReadQEI1;
+    dspic->ReadQEI2 = ReadQEI2;
+    
+    return dspic;
+}
+
+dsPIC* dsPICInitialize() {
     Setup_dsPIC();
     dsPicConfigValues dsPicConfig;
     SetConfigValues(&dsPicConfig);
@@ -587,273 +884,7 @@ void Initialize() {
     SetupOC(&dsPicConfig);
     SetupQEI(&dsPicConfig);
     SetupTMR(&dsPicConfig);
-}
-
-// <editor-fold defaultstate="collapsed" desc="UART">
-
-void SendUART1(uint8_t byte) {
-    _U1TXIF = 0;
-    U1TXREG = byte;
-}
-
-uint8_t RecieveUART1() {
-    _U1RXIF = 0;
-    uint8_t temp;
-    temp = U1RXREG;
-    return temp;
-}
-
-void SendUART2(uint8_t datas) {
-    _U2TXIF = 0;
-    U2TXREG = datas;
-}
-
-uint8_t RecieveUART2() {
-    _U2RXIF = 0;
-    uint8_t temp;
-    temp = U2RXREG;
-    return temp;
-}
-
-void __attribute__((interrupt, auto_psv)) _U1ErrInterrupt(void) {
-    _U1EIF = 0;
-    if (U1STAbits.FERR == 1) {
-        return;
-    }
-
-    if (U1STAbits.OERR == 1) {
-        U1STAbits.OERR = 0;
-        return;
-    }
-}
-
-void __attribute__((interrupt, auto_psv)) _U2ErrInterrupt(void) {
-    _U2EIF = 0;
-    if (U2STAbits.FERR == 1) {
-        return;
-    }
-
-    if (U2STAbits.OERR == 1) {
-        U2STAbits.OERR = 0;
-        return;
-    }
-}
-// </editor-fold>
-
-// <editor-fold defaultstate="collapsed" desc="I2C_Master">
-
-void StartMI2C() {
-    _MI2C1IF = 0;
-    I2C1CONbits.SEN = 1;
-}
-
-void SendMI2C(uint8_t datas) {
-    _MI2C1IF = 0;
-    I2C1TRN = datas;
-}
-
-uint8_t ReadMI2C() {
-    uint8_t temp;
-    _MI2C1IF = 0;
-    while (!_MI2C1IF);
-    temp = I2C1RCV;
-    return temp;
-}
-
-void StopMI2C() {
-    _MI2C1IF = 0;
-    I2C1CONbits.PEN = 1;
-}
-
-void RxOnMI2C() {
-    I2C1CONbits.RCEN = 1;
-}
-
-void RestartMI2C() {
-    _MI2C1IF = 0;
-    I2C1CONbits.RSEN = 1;
-}
-
-void SendAckMI2C() {
-    _MI2C1IF = 0;
-    I2C1CONbits.ACKDT = 0;
-    I2C1CONbits.ACKEN = 1;
-}
-
-void SendNackMI2C() {
-    _MI2C1IF = 0;
-    I2C1CONbits.ACKDT = 1;
-    I2C1CONbits.ACKEN = 1;
-}
-// </editor-fold>
-
-// <editor-fold defaultstate="collapsed" desc="OutPutCompare">
-
-static void SetDuty(OutputCompare ocNum, unsigned int duty, ActiveDirection pinAction) {
-    volatile unsigned int* ocrsArray[4] = {&OC1RS, &OC2RS, &OC3RS, &OC4RS};
-    volatile unsigned int* period = NULL;
-
-    if ((ocNum == OutputCompare1) || (ocNum == OutputCompare2)) {
-        period = &PR2;
-    } else {
-        period = &PR3;
-    }
-    if (duty > *period) {
-        duty = *period;
-    }
-
-    if (pinAction == ActiveHigh) {
-        *ocrsArray[ocNum] = duty;
-    } else {
-        *ocrsArray[ocNum] = *period - duty;
-    }
-}
-
-void SetDutyMicroSec(OutputCompare ocNum, float microSec, ActiveDirection pinAction) {
-
-    volatile unsigned int* OCRS_add[4] = {&OC1RS, &OC2RS, &OC3RS, &OC4RS};
-    volatile unsigned int* period;
-    float TCKPS;
-
-    if (_changeBeforeOC[ocNum].microSec != microSec) {
-        if ((ocNum == OutputCompare1) || (ocNum == OutputCompare2)) {
-            TCKPS = T2CKPS;
-            period = &PR2;
-        } else {
-            TCKPS = T3CKPS;
-            period = &PR3;
-        }
-
-        _changeBeforeOC[ocNum].real_data = fabs(((microSec / 1000000.0) * FCY) / (TCKPS));
-        if (_changeBeforeOC[ocNum].real_data >= *period) {
-            _changeBeforeOC[ocNum].real_data = *period;
-        }
-        _changeBeforeOC[ocNum].microSec = microSec;
-    }
-    if (pinAction == ActiveHigh) {
-        *OCRS_add[ocNum] = _changeBeforeOC[ocNum].real_data;
-    } else {
-        *OCRS_add[ocNum] = *period - _changeBeforeOC[ocNum].real_data;
-    }
-}
-
-void SetDutyPercent(OutputCompare ocNum, float percent, ActiveDirection pinAction) {
-    float duty = 0;
-
-    if (fabs(percent) > 100.0) {
-        percent = 100.0;
-    }
-
-    if ((ocNum == OutputCompare1) || (ocNum == OutputCompare2)) {
-        duty = PR2 * (percent / 100.0);
-    } else {
-        duty = PR3 * (percent / 100.0);
-    }
-    SetDuty(ocNum, duty, pinAction);
-}
-// </editor-fold>
-
-// <editor-fold defaultstate="collapsed" desc="Timer">
-
-static void SetTimerInterrupt(Timer timerNum, InterruptEnableEnum interruptEnable) {
-    switch (timerNum) {
-        case Timer1:
-            _T1IF = 0;
-            _T1IE = (interruptEnable == InterruptEnable);
-            break;
-        case Timer2:
-            _T2IF = 0;
-            _T2IE = (interruptEnable == InterruptEnable);
-            break;
-        case Timer3:
-            _T3IF = 0;
-            _T3IE = (interruptEnable == InterruptEnable);
-            break;
-        case Timer4:
-            _T4IF = 0;
-            _T4IE = (interruptEnable == InterruptEnable);
-            break;
-        case Timer5:
-            _T5IF = 0;
-            _T5IE = (interruptEnable == InterruptEnable);
-            break;
-    }
-}
-
-static void SetTimerConfig(Timer timerNum, uint8_t tckps) {
-    switch (timerNum) {
-        case Timer1:
-            T1CONbits.TCKPS = tckps;
-            T1CONbits.TON = true;
-            break;
-        case Timer2:
-            T2CONbits.TCKPS = tckps;
-            T2CONbits.TON = true;
-            break;
-        case Timer3:
-            T3CONbits.TCKPS = tckps;
-            T3CONbits.TON = true;
-            break;
-        case Timer4:
-            T4CONbits.TCKPS = tckps;
-            T4CONbits.TON = true;
-            break;
-        case Timer5:
-            T5CONbits.TCKPS = tckps;
-            T5CONbits.TON = true;
-            break;
-    }
-}
-
-void SetDelay(Timer timerNum, TimerMode mode, float sec, InterruptEnableEnum interruptEnable) {
-    float TMR = 0;
-    const float PRx_MAX_VAL = 65535.0;
-    float TCKPS = 1.0;
-    uint8_t i = 0;
-    volatile unsigned int* TMR_add[5] = {&TMR1, &TMR2, &TMR3, &TMR4, &TMR5};
-    volatile unsigned int* PR_add[5] = {&PR1, &PR2, &PR3, &PR4, &PR5};
-
-    if ((_changeBeforeTMR[timerNum].Mode != mode)
-            || (_changeBeforeTMR[timerNum].Sec != sec)) {
-        for (i = 0; i < 4; i++) {
-            TCKPS = pow(8.0, i);
-            if (TCKPS > 64.0) {
-                TCKPS = 256.0;
-            }
-            TMR = (((sec / (pow(1000.0, mode + 1))) * FCY) / (TCKPS));
-            if (TMR <= PRx_MAX_VAL) {
-                _changeBeforeTMR[timerNum].real_data = TMR;
-                break;
-            } else if (i == 3) {
-                _changeBeforeTMR[timerNum].real_data = 0xFFFF;
-            }
-        }
-        _changeBeforeTMR[timerNum].TkcpsValue = i;
-        _changeBeforeTMR[timerNum].Mode = mode;
-        _changeBeforeTMR[timerNum].Sec = sec;
-    }
-
-    *TMR_add[timerNum] = 0;
-    *PR_add[timerNum] = _changeBeforeTMR[timerNum].real_data;
-    SetTimerInterrupt(timerNum, interruptEnable);
-    SetTimerConfig(timerNum, _changeBeforeTMR[timerNum].TkcpsValue);
-}
-// </editor-fold>
-
-// <editor-fold defaultstate="collapsed" desc="QEI">
-
-int16_t ReadQEI1() {
-    int16_t temp = 0;
-    temp = (int16_t) POS1CNT;
-    POS1CNT = 0;
-    return temp;
-}
-
-int16_t ReadQEI2() {
-    int16_t temp = 0;
-    temp = (int16_t) POS2CNT;
-    POS2CNT = 0;
-    return temp;
+    return new_dsPIC();
 }
 // </editor-fold>
 

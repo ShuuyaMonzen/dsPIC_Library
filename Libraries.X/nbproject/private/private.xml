@@ -3,10 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/clang/Documents/Programs/Libraries.X/BasicLibrary/Config_dsPIC33FJ128MC802.h</file>
-            <file>file:/C:/Users/clang/Documents/Programs/Libraries.X/BasicLibrary/DefineValues_dsPIC33FJ128MC802.h</file>
-            <file>file:/C:/Users/clang/Documents/Programs/Libraries.X/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.c</file>
-            <file>file:/C:/Users/clang/Documents/Programs/Libraries.X/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.h</file>
+            <file>file:/C:/Users/clang/Documents/dsPIC開発/ライブラリ開発/dsPIC_Library/Libraries.X/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.c</file>
+            <file>file:/C:/Users/clang/Documents/dsPIC開発/ライブラリ開発/dsPIC_Library/Libraries.X/Queue/Queue.h</file>
+            <file>file:/C:/Users/clang/Documents/dsPIC開発/ライブラリ開発/dsPIC_Library/Libraries.X/Queue/Queue.c</file>
+            <file>file:/C:/Users/clang/Documents/dsPIC開発/ライブラリ開発/dsPIC_Library/Libraries.X/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.h</file>
+            <file>file:/C:/Users/clang/Documents/dsPIC開発/ライブラリ開発/dsPIC_Library/Libraries.X/main.c</file>
         </group>
     </open-files>
 </project-private>
