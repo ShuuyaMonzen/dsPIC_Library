@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include "BasicLibrary_dsPIC33FJ128MC802.h"
 
 static float T2CKPS = 1.0;
@@ -64,6 +63,7 @@ static TimerSettingValues _changeBeforeTMR[5] = {};
 
 #define PR_MAX_VAL  (65535.0)
 
+// <editor-fold defaultstate="collapsed" desc="UART">
 float GetBaudRate(BaudRate br) {
     switch (br) {
         case _9600bps:
@@ -78,75 +78,6 @@ float GetBaudRate(BaudRate br) {
             return 0;
     }
 }
-
-float GetI2C_SystemClock(SystemClockI2C sc) {
-    switch (sc) {
-        case _100kHz:
-            return 100000.0;
-        case _400kHz:
-            return 400000.0;
-        case _1MHz:
-            return 1000000.0;
-        default:
-            return 0;
-    }
-}
-
-typedef struct {
-    // <editor-fold defaultstate="collapsed" desc="プロパティ">
-    // <editor-fold defaultstate="collapsed" desc="UART">
-    PPS UART1TX;
-    PPS UART1RX;
-    PPS UART2TX;
-    PPS UART2RX;
-
-    BaudRate UART1BaudRate;
-    BaudRate UART2BaudRate;
-
-    InterruptPriority UART1TxIP;
-    InterruptPriority UART1RxIP;
-    InterruptPriority UART1RxErrorIP;
-    InterruptPriority UART2TxIP;
-    InterruptPriority UART2RxIP;
-    InterruptPriority UART2RxErrorIP;
-    // </editor-fold>
-
-    // <editor-fold defaultstate="collapsed" desc="OC">
-    PPS OutputCompare1;
-    PPS OutputCompare2;
-    PPS OutputCompare3;
-    PPS OutputCompare4;
-
-    OC_Mode OC1And2Mode;
-    OC_Mode OC3And4Mode;
-    // </editor-fold>
-
-    // <editor-fold defaultstate="collapsed" desc="QEI">
-    PPS QEI1AInput;
-    PPS QEI1BInput;
-    PPS QEI2AInput;
-    PPS QEI2BInput;
-
-    InterruptPriority QEI1IP;
-    InterruptPriority QEI2IP;
-    // </editor-fold>
-
-    // <editor-fold defaultstate="collapsed" desc="TMR">
-    InterruptPriority TMR1IP;
-    InterruptPriority TMR2IP;
-    InterruptPriority TMR3IP;
-    InterruptPriority TMR4IP;
-    InterruptPriority TMR5IP;
-    // </editor-fold>
-
-    // <editor-fold defaultstate="collapsed" desc="MI2C">
-    SystemClockI2C Fscl;
-    InterruptPriority I2CM_IP;
-    // </editor-fold>
-    // </editor-fold>
-} dsPicConfigValues;
-
-// <editor-fold defaultstate="collapsed" desc="UART">
 
 void SendUART1(uint8_t byte) {
     _U1TXIF = 0;
@@ -198,6 +129,18 @@ void __attribute__((interrupt, auto_psv)) _U2ErrInterrupt(void) {
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc="I2C_Master">
+float GetI2C_SystemClock(SystemClockI2C sc) {
+    switch (sc) {
+        case _100kHz:
+            return 100000.0;
+        case _400kHz:
+            return 400000.0;
+        case _1MHz:
+            return 1000000.0;
+        default:
+            return 0;
+    }
+}
 
 void StartMI2C() {
     _MI2C1IF = 0;
@@ -451,7 +394,7 @@ static void SetConfigValues(dsPicConfigValues* config) {
 static void SetupPPS(dsPicConfigValues* dsPIC_Object) {
     volatile uint8_t* pointer = &(((volatile uint8_t*) & RPOR0)[0]);
     uint16_t process = 0;
-
+    
     TRISB = 0xFFFF;
 
     // <editor-fold defaultstate="collapsed" desc="UART1">
@@ -662,26 +605,6 @@ static void SetupMI2C(dsPicConfigValues* dsPIC_Object) {
     }
 }
 
-static uint16_t GetBunshuhi(float periodMilliSec) {
-    float PR_RegisterValue = 0;
-    float Bunshuhi = 0;
-    uint8_t i;
-    for (i = 0; i < 4; i++) {
-        Bunshuhi = pow(8.0, i);
-        if (Bunshuhi > 64.0) {
-            Bunshuhi = 256.0;
-        }
-        PR_RegisterValue = (((periodMilliSec) * FCY) / (Bunshuhi));
-        if (PR_RegisterValue <= PR_MAX_VAL) {
-            break;
-        } else if (i == 3) {
-            //ToDo 例外処理
-            break;
-        }
-    }
-    return Bunshuhi;
-}
-
 static void SetupOC(dsPicConfigValues* dsPIC_Object) {
     float TCKPS, temp;
     float OC1And2Period, OC3And4Period;
@@ -846,45 +769,46 @@ static void SetupTMR(dsPicConfigValues* dsPIC_Object) {
 // </editor-fold>
 
 static dsPIC* new_dsPIC(){
-    dsPIC* dspic = (dsPIC*) malloc(sizeof (dsPIC));
+    dsPIC* dsPic = (dsPIC*) malloc(sizeof (dsPIC));
+    dsPic->dsPicConfig = (dsPicConfigValues*) malloc(sizeof (dsPicConfigValues));
     
-    dspic->SendUART1 = SendUART1;
-    dspic->RecieveUART1 = RecieveUART1;
-    dspic->SendUART2 = SendUART2;
-    dspic->RecieveUART2 = RecieveUART2;
+    dsPic->sendUART1 = SendUART1;
+    dsPic->recieveUART1 = RecieveUART1;
+    dsPic->sendUART2 = SendUART2;
+    dsPic->recieveUART2 = RecieveUART2;
     
-    dspic->StartMI2C = StartMI2C;
-    dspic->SendMI2C = SendMI2C;
-    dspic->ReadMI2C = ReadMI2C;
-    dspic->StopMI2C = StopMI2C;
-    dspic->RxOnMI2C = RxOnMI2C;
-    dspic->RestartMI2C = RestartMI2C;
-    dspic->SendAckMI2C = SendAckMI2C;
-    dspic->SendNackMI2C = SendNackMI2C;
+    dsPic->startMI2C = StartMI2C;
+    dsPic->sendMI2C = SendMI2C;
+    dsPic->readMI2C = ReadMI2C;
+    dsPic->stopMI2C = StopMI2C;
+    dsPic->rxOnMI2C = RxOnMI2C;
+    dsPic->restartMI2C = RestartMI2C;
+    dsPic->sendAckMI2C = SendAckMI2C;
+    dsPic->sendNackMI2C = SendNackMI2C;
     
-    dspic->SetDutyMicroSec = SetDutyMicroSec;
-    dspic->SetDutyPercent = SetDutyPercent;
+    dsPic->setDutyMicroSec = SetDutyMicroSec;
+    dsPic->setDutyPercent = SetDutyPercent;
     
-    dspic->SetDelay = SetDelay;
+    dsPic->setDelay = SetDelay;
     
-    dspic->ReadQEI1 = ReadQEI1;
-    dspic->ReadQEI2 = ReadQEI2;
+    dsPic->readQEI1 = ReadQEI1;
+    dsPic->readQEI2 = ReadQEI2;
     
-    return dspic;
+    return dsPic;
 }
 
 dsPIC* dsPICInitialize() {
     Setup_dsPIC();
-    dsPicConfigValues dsPicConfig;
-    SetConfigValues(&dsPicConfig);
+    dsPIC* dsPicObj =  new_dsPIC();
+    SetConfigValues(dsPicObj->dsPicConfig);
 
-    SetupPPS(&dsPicConfig);
-    SetupUART(&dsPicConfig);
-    SetupMI2C(&dsPicConfig);
-    SetupOC(&dsPicConfig);
-    SetupQEI(&dsPicConfig);
-    SetupTMR(&dsPicConfig);
-    return new_dsPIC();
+    SetupPPS(dsPicObj->dsPicConfig);
+    SetupUART(dsPicObj->dsPicConfig);
+    SetupMI2C(dsPicObj->dsPicConfig);
+    SetupOC(dsPicObj->dsPicConfig);
+    SetupQEI(dsPicObj->dsPicConfig);
+    SetupTMR(dsPicObj->dsPicConfig);
+    return dsPicObj;
 }
 // </editor-fold>
 

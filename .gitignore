@@ -1,2 +1,13 @@
-\dsPIC_Library\Libraries.X\.generated_files\*
-/Libraries.X/.generated_files
+*.d
+*.pre
+*.p1
+*.lst
+*.sym
+*.obj
+*.o
+*.sdb
+*.obj.dmp
+html/
+nbproject/private/
+nbproject/Package-*.bash
+build/

@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.c Queue/Queue.c main.c
+SOURCEFILES_QUOTED_IF_SPACED=main.c lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.c lib/EEPROM/EEPROM.c lib/Queue/Queue.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o ${OBJECTDIR}/Queue/Queue.o ${OBJECTDIR}/main.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o.d ${OBJECTDIR}/Queue/Queue.o.d ${OBJECTDIR}/main.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o ${OBJECTDIR}/lib/EEPROM/EEPROM.o ${OBJECTDIR}/lib/Queue/Queue.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o.d ${OBJECTDIR}/lib/EEPROM/EEPROM.o.d ${OBJECTDIR}/lib/Queue/Queue.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o ${OBJECTDIR}/Queue/Queue.o ${OBJECTDIR}/main.o
+OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o ${OBJECTDIR}/lib/EEPROM/EEPROM.o ${OBJECTDIR}/lib/Queue/Queue.o
 
 # Source Files
-SOURCEFILES=BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.c Queue/Queue.c main.c
+SOURCEFILES=main.c lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.c lib/EEPROM/EEPROM.c lib/Queue/Queue.c
 
 
 
@@ -95,42 +95,54 @@ MP_LINKER_FILE_OPTION=,--script=p33FJ128MC802.gld
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
-${OBJECTDIR}/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o: BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.c  .generated_files/7bb774805d9061c53a472ac6fda9648853f6f954.flag .generated_files/35713b39c1b4ae317f752aef53a0b681fac576c7.flag
-	@${MKDIR} "${OBJECTDIR}/BasicLibrary" 
-	@${RM} ${OBJECTDIR}/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o.d 
-	@${RM} ${OBJECTDIR}/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.c  -o ${OBJECTDIR}/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o.d"      -g -D__DEBUG     -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
-	
-${OBJECTDIR}/Queue/Queue.o: Queue/Queue.c  .generated_files/cce69e26249697ec4a2be1bc2a635e3edc50977.flag .generated_files/35713b39c1b4ae317f752aef53a0b681fac576c7.flag
-	@${MKDIR} "${OBJECTDIR}/Queue" 
-	@${RM} ${OBJECTDIR}/Queue/Queue.o.d 
-	@${RM} ${OBJECTDIR}/Queue/Queue.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  Queue/Queue.c  -o ${OBJECTDIR}/Queue/Queue.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/Queue/Queue.o.d"      -g -D__DEBUG     -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
-	
 ${OBJECTDIR}/main.o: main.c  .generated_files/e4f851e4820ff8ca8bc8c1f50696229c4bee56a9.flag .generated_files/35713b39c1b4ae317f752aef53a0b681fac576c7.flag
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/main.o.d 
 	@${RM} ${OBJECTDIR}/main.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  main.c  -o ${OBJECTDIR}/main.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/main.o.d"      -g -D__DEBUG     -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
+${OBJECTDIR}/lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o: lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.c  .generated_files/511a9696831cf66936c79bca0120da3b329033be.flag .generated_files/35713b39c1b4ae317f752aef53a0b681fac576c7.flag
+	@${MKDIR} "${OBJECTDIR}/lib/BasicLibrary" 
+	@${RM} ${OBJECTDIR}/lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o.d 
+	@${RM} ${OBJECTDIR}/lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.c  -o ${OBJECTDIR}/lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o.d"      -g -D__DEBUG     -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
+	
+${OBJECTDIR}/lib/EEPROM/EEPROM.o: lib/EEPROM/EEPROM.c  .generated_files/fc038c952c2819b37532953d4ef35e492ced2806.flag .generated_files/35713b39c1b4ae317f752aef53a0b681fac576c7.flag
+	@${MKDIR} "${OBJECTDIR}/lib/EEPROM" 
+	@${RM} ${OBJECTDIR}/lib/EEPROM/EEPROM.o.d 
+	@${RM} ${OBJECTDIR}/lib/EEPROM/EEPROM.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/EEPROM/EEPROM.c  -o ${OBJECTDIR}/lib/EEPROM/EEPROM.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/lib/EEPROM/EEPROM.o.d"      -g -D__DEBUG     -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
+	
+${OBJECTDIR}/lib/Queue/Queue.o: lib/Queue/Queue.c  .generated_files/bac29ac8a27d9897254e7fe4058858d5d6a579ae.flag .generated_files/35713b39c1b4ae317f752aef53a0b681fac576c7.flag
+	@${MKDIR} "${OBJECTDIR}/lib/Queue" 
+	@${RM} ${OBJECTDIR}/lib/Queue/Queue.o.d 
+	@${RM} ${OBJECTDIR}/lib/Queue/Queue.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/Queue/Queue.c  -o ${OBJECTDIR}/lib/Queue/Queue.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/lib/Queue/Queue.o.d"      -g -D__DEBUG     -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
+	
 else
-${OBJECTDIR}/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o: BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.c  .generated_files/b1f7f3e820a5bd7a1d448333c613224c0e9090.flag .generated_files/35713b39c1b4ae317f752aef53a0b681fac576c7.flag
-	@${MKDIR} "${OBJECTDIR}/BasicLibrary" 
-	@${RM} ${OBJECTDIR}/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o.d 
-	@${RM} ${OBJECTDIR}/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.c  -o ${OBJECTDIR}/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o.d"        -g -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
-	
-${OBJECTDIR}/Queue/Queue.o: Queue/Queue.c  .generated_files/117f227b5f7d52bb3ce4780fe17e634839941a85.flag .generated_files/35713b39c1b4ae317f752aef53a0b681fac576c7.flag
-	@${MKDIR} "${OBJECTDIR}/Queue" 
-	@${RM} ${OBJECTDIR}/Queue/Queue.o.d 
-	@${RM} ${OBJECTDIR}/Queue/Queue.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  Queue/Queue.c  -o ${OBJECTDIR}/Queue/Queue.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/Queue/Queue.o.d"        -g -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
-	
 ${OBJECTDIR}/main.o: main.c  .generated_files/4fa91d1c1b4b98b5bf9c0b14b8da4c60e78b1e88.flag .generated_files/35713b39c1b4ae317f752aef53a0b681fac576c7.flag
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/main.o.d 
 	@${RM} ${OBJECTDIR}/main.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  main.c  -o ${OBJECTDIR}/main.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/main.o.d"        -g -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
+	
+${OBJECTDIR}/lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o: lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.c  .generated_files/705acb03d124f327e42725e02705b83bdd68e5f8.flag .generated_files/35713b39c1b4ae317f752aef53a0b681fac576c7.flag
+	@${MKDIR} "${OBJECTDIR}/lib/BasicLibrary" 
+	@${RM} ${OBJECTDIR}/lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o.d 
+	@${RM} ${OBJECTDIR}/lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.c  -o ${OBJECTDIR}/lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.o.d"        -g -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
+	
+${OBJECTDIR}/lib/EEPROM/EEPROM.o: lib/EEPROM/EEPROM.c  .generated_files/6fc108a3fe400d32e914d48fd4c60db30268bdf0.flag .generated_files/35713b39c1b4ae317f752aef53a0b681fac576c7.flag
+	@${MKDIR} "${OBJECTDIR}/lib/EEPROM" 
+	@${RM} ${OBJECTDIR}/lib/EEPROM/EEPROM.o.d 
+	@${RM} ${OBJECTDIR}/lib/EEPROM/EEPROM.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/EEPROM/EEPROM.c  -o ${OBJECTDIR}/lib/EEPROM/EEPROM.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/lib/EEPROM/EEPROM.o.d"        -g -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
+	
+${OBJECTDIR}/lib/Queue/Queue.o: lib/Queue/Queue.c  .generated_files/15ea827a8a328ec9dc6baf9b61dd8ef445ea1a64.flag .generated_files/35713b39c1b4ae317f752aef53a0b681fac576c7.flag
+	@${MKDIR} "${OBJECTDIR}/lib/Queue" 
+	@${RM} ${OBJECTDIR}/lib/Queue/Queue.o.d 
+	@${RM} ${OBJECTDIR}/lib/Queue/Queue.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/Queue/Queue.c  -o ${OBJECTDIR}/lib/Queue/Queue.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/lib/Queue/Queue.o.d"        -g -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
 endif
 

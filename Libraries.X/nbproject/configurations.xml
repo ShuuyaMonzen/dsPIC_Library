@@ -4,15 +4,20 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <logicalFolder name="BasicLibrary"
-                     displayName="BasicLibrary"
-                     projectFiles="true">
-        <itemPath>BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.h</itemPath>
-        <itemPath>BasicLibrary/DefineValues_dsPIC33FJ128MC802.h</itemPath>
-        <itemPath>BasicLibrary/Config_dsPIC33FJ128MC802.h</itemPath>
-      </logicalFolder>
-      <logicalFolder name="Queue" displayName="Queue" projectFiles="true">
-        <itemPath>Queue/Queue.h</itemPath>
+      <logicalFolder name="lib" displayName="lib" projectFiles="true">
+        <logicalFolder name="BasicLibrary"
+                       displayName="BasicLibrary"
+                       projectFiles="true">
+          <itemPath>lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.h</itemPath>
+          <itemPath>lib/BasicLibrary/Config_dsPIC33FJ128MC802.h</itemPath>
+          <itemPath>lib/BasicLibrary/DefineValues_dsPIC33FJ128MC802.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="EEPROM" displayName="EEPROM" projectFiles="true">
+          <itemPath>lib/EEPROM/EEPROM.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="Queue" displayName="Queue" projectFiles="true">
+          <itemPath>lib/Queue/Queue.h</itemPath>
+        </logicalFolder>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
@@ -22,13 +27,18 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <logicalFolder name="BasicLibrary"
-                     displayName="BasicLibrary"
-                     projectFiles="true">
-        <itemPath>BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.c</itemPath>
-      </logicalFolder>
-      <logicalFolder name="Queue" displayName="Queue" projectFiles="true">
-        <itemPath>Queue/Queue.c</itemPath>
+      <logicalFolder name="lib" displayName="lib" projectFiles="true">
+        <logicalFolder name="BasicLibrary"
+                       displayName="BasicLibrary"
+                       projectFiles="true">
+          <itemPath>lib/BasicLibrary/BasicLibrary_dsPIC33FJ128MC802.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="EEPROM" displayName="EEPROM" projectFiles="true">
+          <itemPath>lib/EEPROM/EEPROM.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="Queue" displayName="Queue" projectFiles="true">
+          <itemPath>lib/Queue/Queue.c</itemPath>
+        </logicalFolder>
       </logicalFolder>
       <itemPath>main.c</itemPath>
     </logicalFolder>
@@ -267,7 +277,7 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0-157ff"/>
         <property key="memories.rww" value="true"/>
-        <property key="poweroptions.powerenable" value="false"/>
+        <property key="poweroptions.powerenable" value="true"/>
         <property key="programmerToGoImageName" value="Libraries_ptg"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>
