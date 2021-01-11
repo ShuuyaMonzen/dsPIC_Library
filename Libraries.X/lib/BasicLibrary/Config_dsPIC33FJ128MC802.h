@@ -12,8 +12,8 @@
 
 // <editor-fold defaultstate="collapsed" desc="UART CONFIG">
 /* ボーレート */
-#define UART1_BAUD_RATE _57600bps
-#define UART2_BAUD_RATE _57600bps
+#define UART1_BAUD_RATE _9600bps
+#define UART2_BAUD_RATE _9600bps
 /*ピン配置*/
 #define UART1_PIN_TX RP5
 #define UART1_PIN_RX RP6

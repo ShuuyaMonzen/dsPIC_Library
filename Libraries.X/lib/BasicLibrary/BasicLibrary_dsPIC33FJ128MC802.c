@@ -378,17 +378,46 @@ static void Setup_dsPIC() {
     INTCON1bits.NSTDIS = 0;
     INTCON2bits.ALTIVT = 0;
     //PLLを起動、安定まで待つ
-    //80MHz
+    //40MHz
+    __delay_ms(10);
 }
 
 static void SetConfigValues(dsPicConfigValues* config) {
     config->UART1BaudRate = UART1_BAUD_RATE;
+    config->UART1TX = UART1_PIN_TX;
+    config->UART1RX = UART1_PIN_RX;
     config->UART1TxIP = UART1TX_IP;
     config->UART1RxIP = UART1RX_IP;
 
     config->UART2BaudRate = UART2_BAUD_RATE;
+    config->UART2TX = UART2_PIN_TX;
+    config->UART2RX = UART2_PIN_RX;
     config->UART2TxIP = UART2TX_IP;
     config->UART2RxIP = UART2RX_IP;
+    
+    config->TMR1IP = TMR1_IP;
+    config->TMR2IP = TMR2_IP;
+    config->TMR3IP = TMR3_IP;
+    config->TMR4IP = TMR4_IP;
+    config->TMR5IP = TMR5_IP;
+
+    config->QEI1IP = QEI1_IP;
+    config->QEI2IP = QEI2_IP;
+    config->QEI1AInput = QEI1_PIN_A;
+    config->QEI1BInput = QEI1_PIN_B;
+    config->QEI2AInput = QEI2_PIN_A;
+    config->QEI2BInput = QEI2_PIN_B;
+    
+    
+    config->OC1And2Mode = OC_1AND2_FREQUENCY;
+    config->OC3And4Mode = OC_3AND4_FREQUENCY;
+    config->OutputCompare1 = OC1_PIN;
+    config->OutputCompare2 = OC2_PIN;
+    config->OutputCompare3 = OC3_PIN;
+    config->OutputCompare4 = OC4_PIN;
+    
+    config->Fscl = I2C_SYSTEM_CLOCK;
+    config->I2CM_IP = I2C_MASTER_IP;
 }
 
 static void SetupPPS(dsPicConfigValues* dsPIC_Object) {
@@ -402,7 +431,7 @@ static void SetupPPS(dsPicConfigValues* dsPIC_Object) {
         TRISB = (TRISB & ((1 << dsPIC_Object->UART1TX) ^ 0xFFFF));
         pointer[dsPIC_Object->UART1TX] = 3;
     }
-
+    
     if (dsPIC_Object->UART1RX != NotUsedModule) {
         TRISB = (TRISB | (1 << dsPIC_Object->UART1RX));
         RPINR18bits.U1RXR = dsPIC_Object->UART1RX;
@@ -474,6 +503,7 @@ static void SetupPPS(dsPicConfigValues* dsPIC_Object) {
         process = process | (1 << dsPIC_Object->QEI2BInput);
     }
     // </editor-fold>
+
     TRISB = TRISB & process;
     __delay_ms(10);
 }
