@@ -98,74 +98,74 @@ static void readEeprom(dsPIC* dsPICObj,uint8_t x, uint8_t y, uint8_t* add, uint8
 }
 
 /* << 書き込み >>*/
-void writeEepromUint8(eepromStream* eepromStreamObj,uint8_t x, uint8_t y, uint8_t input_data) {
+void writeEepromUint8(EepromStream* eepromStreamObj,uint8_t x, uint8_t y, uint8_t input_data) {
     writeEeprom(eepromStreamObj->dsPICObj, x, y, &input_data, 1);
 }
-void writeEepromInt8(eepromStream* eepromStreamObj,uint8_t x,uint8_t y,int8_t input_data){
+void writeEepromInt8(EepromStream* eepromStreamObj,uint8_t x,uint8_t y,int8_t input_data){
     writeEeprom(eepromStreamObj->dsPICObj, x, y, (uint8_t*) &input_data, 1);
 }
 
-void writeEepromUint16(eepromStream* eepromStreamObj,uint8_t x, uint8_t y, uint16_t input_data) {
+void writeEepromUint16(EepromStream* eepromStreamObj,uint8_t x, uint8_t y, uint16_t input_data) {
     writeEeprom(eepromStreamObj->dsPICObj, x, y, (uint8_t*) & input_data, 2);
 }
-void writeEepromInt16(eepromStream* eepromStreamObj,uint8_t x,uint8_t y,int16_t input_data){
+void writeEepromInt16(EepromStream* eepromStreamObj,uint8_t x,uint8_t y,int16_t input_data){
     writeEeprom(eepromStreamObj->dsPICObj, x, y, (uint8_t*) & input_data, 2);
 }
 
-void writeEepromUint32(eepromStream* eepromStreamObj,uint8_t x, uint8_t y, uint32_t input_data) {
+void writeEepromUint32(EepromStream* eepromStreamObj,uint8_t x, uint8_t y, uint32_t input_data) {
     writeEeprom(eepromStreamObj->dsPICObj, x, y, (uint8_t*) & input_data, 4);
 }
-void writeEepromInt32(eepromStream* eepromStreamObj,uint8_t x,uint8_t y,int32_t input_data){
+void writeEepromInt32(EepromStream* eepromStreamObj,uint8_t x,uint8_t y,int32_t input_data){
     writeEeprom(eepromStreamObj->dsPICObj, x, y, (uint8_t*) & input_data, 4);
 }
 
-void writeEepromFloat(eepromStream* eepromStreamObj,uint8_t x, uint8_t y, float input_data) {
+void writeEepromFloat(EepromStream* eepromStreamObj,uint8_t x, uint8_t y, float input_data) {
     writeEeprom(eepromStreamObj->dsPICObj, x, y, (uint8_t*) & input_data, 4);
 }
 /******************************************************************************/
 
 /* << 読み込み >>*/
-uint8_t readEepromUint8(eepromStream* eepromStreamObj,uint8_t x, uint8_t y) {
+uint8_t readEepromUint8(EepromStream* eepromStreamObj,uint8_t x, uint8_t y) {
     uint8_t readData = 0;
     readEeprom(eepromStreamObj->dsPICObj, x, y, (uint8_t*)&readData, 1);
     return readData;
 }
-int8_t readEepromInt8(eepromStream* eepromStreamObj,uint8_t x,uint8_t y){
+int8_t readEepromInt8(EepromStream* eepromStreamObj,uint8_t x,uint8_t y){
     int8_t readData = 0;
     readEeprom(eepromStreamObj->dsPICObj, x, y, (uint8_t*)&readData, 1);
     return readData;
 }
 
-uint16_t readEepromUint16(eepromStream* eepromStreamObj,uint8_t x, uint8_t y) {
+uint16_t readEepromUint16(EepromStream* eepromStreamObj,uint8_t x, uint8_t y) {
     uint16_t readData = 0;
     readEeprom(eepromStreamObj->dsPICObj, x, y, (uint8_t*)&readData, 2);
     return readData;
 }
-int16_t readEepromInt16(eepromStream* eepromStreamObj,uint8_t x,uint8_t y){
+int16_t readEepromInt16(EepromStream* eepromStreamObj,uint8_t x,uint8_t y){
     int16_t readData = 0;
     readEeprom(eepromStreamObj->dsPICObj, x, y, (uint8_t*)&readData, 2);
     return readData;
 }
 
-uint32_t readEepromUint32(eepromStream* eepromStreamObj,uint8_t x, uint8_t y) {
+uint32_t readEepromUint32(EepromStream* eepromStreamObj,uint8_t x, uint8_t y) {
     uint32_t readData = 0;
     readEeprom(eepromStreamObj->dsPICObj, x, y, (uint8_t*)&readData, 4);
     return readData;
 }
-int32_t readEepromInt32(eepromStream* eepromStreamObj,uint8_t x,uint8_t y){
+int32_t readEepromInt32(EepromStream* eepromStreamObj,uint8_t x,uint8_t y){
     int32_t readData = 0;
     readEeprom(eepromStreamObj->dsPICObj, x, y, (uint8_t*)&readData, 4);
     return readData;
 }
 
-float readEepromFloat(eepromStream* eepromStreamObj,uint8_t x, uint8_t y) {
+float readEepromFloat(EepromStream* eepromStreamObj,uint8_t x, uint8_t y) {
     float readData = 0;
     readEeprom(eepromStreamObj->dsPICObj, x, y, (uint8_t*)&readData, 4);
     return readData;
 }
 
-eepromStream* newEeprom(dsPIC* dsPICObj){
-    eepromStream* eepromStreamObj = (eepromStream*) malloc(sizeof (eepromStream));
+EepromStream* newEeprom(dsPIC* dsPICObj){
+    EepromStream* eepromStreamObj = (EepromStream*) malloc(sizeof (EepromStream));
     
     eepromStreamObj->dsPICObj = dsPICObj;
     eepromStreamObj->writeEepromUint8 = writeEepromUint8;
