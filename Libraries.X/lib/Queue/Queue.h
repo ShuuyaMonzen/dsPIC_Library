@@ -38,8 +38,8 @@ typedef struct {
     uint8_t bitNum;
 } QueueInterrupt;
 
-typedef struct Queue;
-typedef struct {
+typedef struct queue Queue;
+struct queue{
     // <editor-fold defaultstate="collapsed" desc="プロパティ">
     uint8_t dataArrary[MAX_DATA_TYPE_QUEUE_SIZE];
     void* addressArray[MAX_ADDRESS_TYPE_QUEUE_SIZE];
@@ -52,14 +52,13 @@ typedef struct {
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="メソッド">
-    void (*initQueue)(struct Queue* queue);
-    void  (*enqueueBasic)(struct Queue* queue, void* datas);
-    void*  (*dequeueBasic)(struct Queue* queue);
+    void (*initQueue)(Queue* queue);
+    void  (*enqueueBasic)(Queue* queue, void* datas);
+    void*  (*dequeueBasic)(Queue* queue);
     void  (*queueInterruptOff)(QueueInterrupt* queueInterruptObj);
     void  (*queueInterruptOn)(QueueInterrupt* queueInterruptObj);
     // </editor-fold>
-
-} Queue;
+};
 // </editor-fold>
 
 #endif
