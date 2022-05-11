@@ -8,7 +8,7 @@
 #ifndef CONFIG_DSPIC33FJ128MC802_H
 #define CONFIG_DSPIC33FJ128MC802_H
 
-#include "DefineValues_dsPIC33FJ128MC802.h"
+#include "CodeConst_dsPIC33FJ128MC802.h"
 
 // <editor-fold defaultstate="collapsed" desc="UART CONFIG">
 /* ボーレート */
